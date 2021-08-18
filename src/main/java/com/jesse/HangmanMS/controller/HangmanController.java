@@ -58,11 +58,19 @@ public class HangmanController {
                              @RequestParam(name = "nextLetter") String nextLetter){
     HangmanGame game = repo.findById(gameId).orElse(null);
     // calculate new game state
+        while (!finished) {String letter = input.next();
+            letter = printsWrongInput(input, letter);
 
+            boolean found = false;
+
+            for (int i = 0; i < wordList.length; i++) {
+                if (letter.charAt(0) == wordList[i]) {guesses[i] = wordList[i];
+                    found = true;}
+            }
         // store updated game state
         game = repo.save(game);
     model.addAttribute("hangmanGame", game);
-        return "index";
+        return "index2";
     }
 
 
