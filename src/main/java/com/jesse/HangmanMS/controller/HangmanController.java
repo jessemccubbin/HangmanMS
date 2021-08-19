@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -53,25 +54,45 @@ public class HangmanController {
 
     }
 
-    @PostMapping("/nextLetter")
+    @PostMapping("/nextGuess")
     public String nextLetter(Model model, @RequestParam(name = "hangmanGameId") long gameId,
-                             @RequestParam(name = "nextLetter") String nextLetter){
-    HangmanGame game = repo.findById(gameId).orElse(null);
-    // calculate new game state
-        while (!finished) {String letter = input.next();
-            letter = printsWrongInput(input, letter);
+                             @RequestParam(name = "nextLetter") String nextLetter) {
 
-            boolean found = false;
+        HangmanGame game = repo.findById(gameId).orElse(null);
+        // calculate new game state
+        boolean found = false;
 
-            for (int i = 0; i < wordList.length; i++) {
-                if (letter.charAt(0) == wordList[i]) {guesses[i] = wordList[i];
-                    found = true;}
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < game.getWord().length(); i++) {
+            if (nextLetter.charAt(0) == game.getWord().charAt(i)) {
+               sb.append(" ").append(game.getWord().charAt(i));
+                found = true;
+            } else {
+                sb.append(" " + game.getGuess().charAt((i * 2) + 1));
             }
-        // store updated game state
-        game = repo.save(game);
-    model.addAttribute("hangmanGame", game);
-        return "index2";
+        }
+
+        game.setGuess(sb.toString());
+
+        if (!found) {
+            int newTries = game.getTries() + 1;
+            game.setTries(newTries);
+        }
+
+        if (game.getTries() > 6) {
+            game.setFinished(true);
+        }
+
+        if (!game.getGuess().contains("_")) {
+            game.setSolved(true);
+            game.setFinished(true);
+        }
+
+            // store updated game state
+            game = repo.save(game);
+            model.addAttribute("hangmanGame", game);
+            return "index";
+        }
+    // todo
     }
-
-
-}
