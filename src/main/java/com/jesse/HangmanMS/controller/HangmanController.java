@@ -23,7 +23,7 @@ public class HangmanController {
     HangmanGameRepo repo;
 
     @GetMapping("/")
-    public String index(Model model) throws Exception{
+    public String index(Model model) throws Exception {
         HangmanGame game = new HangmanGame();
 
         Resource txtFile = new ClassPathResource("engmix.txt");
@@ -34,12 +34,12 @@ public class HangmanController {
                      = new BufferedReader(new InputStreamReader(inputStream))) {
             String line;
             while ((line = br.readLine()) != null) {
-               words.add(line);
+                words.add(line);
             }
         }
         int wordIndex = ((int) (Math.random() * words.size()));
         String wordGuess = words.get(wordIndex);
-        String hiddenWord = " _".repeat(wordGuess.length()).trim();
+        String hiddenWord = " _".repeat(wordGuess.length());
 
         game.setGuess(hiddenWord);
         game.setWord(wordGuess);
@@ -59,16 +59,22 @@ public class HangmanController {
 
         HangmanGame game = repo.findById(gameId).orElse(null);
         // calculate new game state
+        if(nextLetter.isEmpty()){
+          // If user doesnt submit a letter it sha'll keep showing the page
+            model.addAttribute("hangmanGame", game);
+            return "index";
+        }
+
         boolean found = false;
 
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < game.getWord().length(); i++) {
             if (nextLetter.charAt(0) == game.getWord().charAt(i)) {
-               sb.append(" ").append(game.getWord().charAt(i));
+                sb.append(" ").append(game.getWord().charAt(i));
                 found = true;
             } else {
-                sb.append(" " + game.getGuess().charAt((i * 2) + 1));
+               sb.append(" ").append(game.getGuess().charAt((i * 2) + 1));
             }
         }
 
@@ -81,7 +87,7 @@ public class HangmanController {
 
         if (game.getTries() > 6) {
             game.setFinished(true);
-            return "failure";
+            return "index";
         }
 
         if (!game.getGuess().contains("_")) {
@@ -89,9 +95,9 @@ public class HangmanController {
             game.setFinished(true);
         }
 
-            // store updated game state
-            game = repo.save(game);
-            model.addAttribute("hangmanGame", game);
-            return "index";
-        }
+        // store updated game state
+        game = repo.save(game);
+        model.addAttribute("hangmanGame", game);
+        return "index";
     }
+}
