@@ -60,7 +60,7 @@ public class HangmanController {
         HangmanGame game = repo.findById(gameId).orElse(null);
         // calculate new game state
         if(nextLetter.isEmpty()){
-          // If user doesnt submit a letter it sha'll keep showing the page
+          // If user doesn't submit a letter it shall keep showing the page
             model.addAttribute("hangmanGame", game);
             return "index";
         }
