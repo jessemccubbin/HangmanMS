@@ -7,6 +7,6 @@ public class HangmanService {
 
     public String nextLetter(Model model) {
 
-        return "index2";
+        return "index";
     }
 }

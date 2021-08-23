@@ -10,7 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -82,6 +81,7 @@ public class HangmanController {
 
         if (game.getTries() > 6) {
             game.setFinished(true);
+            return "failure";
         }
 
         if (!game.getGuess().contains("_")) {
@@ -94,5 +94,4 @@ public class HangmanController {
             model.addAttribute("hangmanGame", game);
             return "index";
         }
-    // todo
     }
