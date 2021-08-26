@@ -39,7 +39,10 @@ public class HangmanController {
         }
         int wordIndex = ((int) (Math.random() * words.size()));
         String wordGuess = words.get(wordIndex);
-        String hiddenWord = " _".repeat(wordGuess.length());
+        String hiddenWord = "";
+        for(int i = 0; i < wordGuess.length(); i++) {
+            hiddenWord += " _";
+        }
 
         game.setGuess(hiddenWord);
         game.setWord(wordGuess);
@@ -99,5 +102,13 @@ public class HangmanController {
         game = repo.save(game);
         model.addAttribute("hangmanGame", game);
         return "index";
+    }
+
+    public HangmanGameRepo getRepo() {
+        return repo;
+    }
+
+    public void setRepo(HangmanGameRepo repo) {
+        this.repo = repo;
     }
 }
